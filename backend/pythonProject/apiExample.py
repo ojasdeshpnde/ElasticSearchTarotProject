@@ -1,6 +1,9 @@
+import io
+
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 import requests
+from PIL import Image
 
 app = Flask(__name__)
 CORS(app)
@@ -22,8 +25,19 @@ def hello_world():
 @app.route('/testimage')
 def blah():
     response = make_response(b.content)
+    image = Image.open(io.BytesIO(b.content))
+    width, height = image.size
+    left = 80*width/672
+    right = 592*width/672
+    top = 92*height/936
+    bottom = 500*height/936
+    img_byte_arr = io.BytesIO()
+    image.crop((left, top, right, bottom)).save(img_byte_arr, format='jpeg')
+    img_byte_arr = img_byte_arr.getvalue()
+    image.close()
+    response = make_response(img_byte_arr)
     # this might be helpful
-    # response.headers.set('Content-Type', 'image/jpeg')
+    response.headers.set('Content-Type', 'image/jpeg')
     # below will start a download
     # response.headers.set('Content-Disposition', 'attachment', filename='%s.jpg' % 'test')
     return response
