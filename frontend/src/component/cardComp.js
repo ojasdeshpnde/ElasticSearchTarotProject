@@ -1,10 +1,16 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import { useEffect, useState } from 'react';
+import getTestImage from '../service/fetchApi'
 
 function CardComp() {
+  useEffect( () => {
+    getTestImage();
+  },[])
+
   return (
     <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src="holder.js/100px180" />
+      <Card.Img variant="top" src="http://localhost:5001/testimage" />
       <Card.Body>
         <Card.Title>Card Title</Card.Title>
         <Card.Text>
