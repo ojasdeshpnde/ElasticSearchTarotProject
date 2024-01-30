@@ -1,0 +1,54 @@
+/* Add this to your existing CSS file or create a new one */
+body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    z-index: 1000; /* Ensure the navbar appears above other content */
+  }
+  
+  .app-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .logout-button {
+    padding: 8px 16px;
+    background-color: #000000;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .logout-button:hover{
+    padding: 8px 16px;
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .content {
+    margin-top: 60px; /* Adjust this value to ensure content doesn't overlap with the fixed navbar */
+  }
+  
+  /* Add more styling as needed */
+  
+  .navbar-brand{
+    color:white !important;
+  }
+
+  a{
+    color:#ffffff;
+  }
