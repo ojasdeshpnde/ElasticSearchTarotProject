@@ -1,1 +1,1 @@
-init
+Tarot Card Project
