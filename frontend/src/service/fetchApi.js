@@ -1,22 +1,14 @@
 
+import { getBackendIP } from "./localhostSettings";
 
 export default function getHello() {
-    fetch('http://localhost:' + getPort())
+    fetch(getBackendIP())
     .then(response => response.json())
     .then(data => console.log(data));
 }
 
 export function getTestImage() {
-    fetch('http://localhost:' + getPort() +  '/testimage')
+    fetch(getBackendIP() +  '/testimage')
     .then(response => response.json())
     .then(data => console.log(data));
-}
-
-export function getBackendIP(){
-    return 'http://localhost:' + getPort()
-}
-
-
-function getPort(){
-    return '5002';
 }

@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { useEffect, useState } from 'react';
 import getTestImage from '../service/fetchApi'
-import { getBackendIP } from '../service/fetchApi';
+import { getBackendIP } from '../service/localhostSettings';
 
 function CardComp() {
   useEffect( () => {

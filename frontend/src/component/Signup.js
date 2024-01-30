@@ -5,7 +5,7 @@ import './auth.css'; // Import the shared styling
 import '../service/AuthService';
 import { useNavigate } from 'react-router-dom';
 import {loginUser, checkUserLogin} from '../service/AuthService';
-import { getBackendIP } from '../service/fetchApi';
+import { getBackendIP } from '../service/localhostSettings';
 
 const Signup = (props) => {
 
