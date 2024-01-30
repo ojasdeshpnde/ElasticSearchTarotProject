@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './component/Login';
 import Signup from './component/Signup';
 import Dashboard from './component/Dashboard';
-import getHello from './service/fetchApi';
 
 
 
@@ -17,7 +16,6 @@ function App() {
   const [email, setEmail] = useState("");
 
   useEffect( () => {
-    getHello();
   },[])
 
   return (
