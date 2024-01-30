@@ -5,6 +5,7 @@ import './auth.css'; // Import the shared styling
 import '../service/AuthService';
 import { useNavigate } from 'react-router-dom';
 import {loginUser, checkUserLogin} from '../service/AuthService';
+import { getBackendIP } from '../service/fetchApi';
 
 const Signup = (props) => {
 
@@ -37,7 +38,7 @@ const Signup = (props) => {
       const handleSignup = async () => {
         try {
 
-          const response = await fetch('http://192.168.2.86:5002/signup', {
+          const response = await fetch(getBackendIP() + '/signup', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

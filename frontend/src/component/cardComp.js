@@ -2,6 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { useEffect, useState } from 'react';
 import getTestImage from '../service/fetchApi'
+import { getBackendIP } from '../service/fetchApi';
 
 function CardComp() {
   useEffect( () => {
@@ -10,7 +11,7 @@ function CardComp() {
 
   return (
     <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src="http://localhost:5002/testimage" />
+      <Card.Img variant="top" src={getBackendIP() + "/testimage"} />
       <Card.Body>
         <Card.Title>Card Title</Card.Title>
         <Card.Text>

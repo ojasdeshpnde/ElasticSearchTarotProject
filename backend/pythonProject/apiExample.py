@@ -20,11 +20,10 @@ pwd_context = CryptContext(schemes=["sha256_crypt"])
 x = requests.get("https://api.scryfall.com/cards/56ebc372-aabd-4174-a943-c7bf59e5028d")
 
 b = x.json()['image_uris']['large']
-print(b)
 b = requests.get(b)
 b.raise_for_status()
-if b.status_code != 204:
-    print(b.content)
+# if b.status_code != 204:
+#     print(b.content)
 
 
 
@@ -109,30 +108,6 @@ def genSession(payload):
     #     print('Invalid token.')
 
 
-@app.route('/signup', methods=['POST'])
-def sign_up():
-
-    formData = request.get_json()
-    user = createUser(formData['password'], formData['fname'], formData['lname'], formData['email'])
-    if user != None:
-        retObject = jsonify(genSession(user))
-        retObject.set_cookie("auth",str(retObject), httponly=True, secure=True)
-        return retObject
-    else:
-        return make_response(jsonify("access denied"), 404)
-
-
-@app.route('/login', methods=['POST'])
-def login():
-
-    formData = request.get_json()
-    user = authenticate_user(formData['email'], formData['password'])
-    if user != None:
-        retObject = jsonify(genSession(user))
-        retObject.set_cookie("auth",str(retObject), httponly=True, secure=True)
-        return retObject
-    else:
-        return make_response(jsonify("access denied"), 404)
 
 @app.route('/')
 def hello_world():
@@ -157,5 +132,31 @@ def blah():
     # below will start a download
     # response.headers.set('Content-Disposition', 'attachment', filename='%s.jpg' % 'test')
     return response
+
+
+@app.route('/signup', methods=['POST'])
+def sign_up():
+
+    formData = request.get_json()
+    user = createUser(formData['password'], formData['fname'], formData['lname'], formData['email'])
+    if user != None:
+        retObject = jsonify(genSession(user))
+        retObject.set_cookie("auth",str(retObject), httponly=True, secure=True)
+        return retObject
+    else:
+        return make_response(jsonify("access denied"), 404)
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    formData = request.get_json()
+    user = authenticate_user(formData['email'], formData['password'])
+    if user != None:
+        retObject = jsonify(genSession(user))
+        retObject.set_cookie("auth",str(retObject), httponly=True, secure=True)
+        return retObject
+    else:
+        return make_response(jsonify("access denied"), 404)
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002,debug=False)
