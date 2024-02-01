@@ -37,7 +37,11 @@ const Login = (props) => {
 
 
 
-      const handleLogin = async () => {
+
+
+      const handleLogin = async (event) => {
+        console.log(event);
+        event.preventDefault(); // prevent the form from submitting
         try {
           console.log("Attempting login!")
           const response = await fetch(getBackendIP() + '/login', {
@@ -75,7 +79,7 @@ const Login = (props) => {
     <div style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}} className="auth-container">
       <div className="auth-card">
         <h2>Login</h2>
-        <form>
+        <form onSubmit={handleLogin}>
           <div className="form-group">
             <label>Email:</label>
             <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
@@ -84,7 +88,7 @@ const Login = (props) => {
             <label>Password:</label>
             <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required />
           </div>
-          <button onClick={handleLogin}>Login</button>
+          <button type="button" onClick={handleLogin}>Login</button>
         </form> 
         <p>
           Don't have an account? <Link to="/signup">Sign Up</Link>

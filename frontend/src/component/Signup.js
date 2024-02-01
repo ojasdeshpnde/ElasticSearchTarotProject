@@ -35,7 +35,8 @@ const Signup = (props) => {
 
 
 
-      const handleSignup = async () => {
+      const handleSignup = async (event) => {
+        event.preventDefault(); // prevent the form from submitting
         try {
 
           const response = await fetch(getBackendIP() + '/signup', {
@@ -70,7 +71,7 @@ const Signup = (props) => {
     <div style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}} className="auth-container">
       <div className="auth-card">
         <h2>Sign Up</h2>
-        <form>
+        <form onSubmit={handleSignup}>
           <div className="form-group">
             <label>First Name:</label>
             <input type="fname" id="fname" name="fname" value={formData.fname} onChange={handleChange} required />
