@@ -2,3 +2,6 @@
 /.idea
 backend/pythonProject/database.db
 frontend/src/service/localhostSettings.js
+docker/datafiles
+docker/cred.txt
+docker/http_ca.crt
