@@ -40,7 +40,6 @@ const Login = (props) => {
 
 
       const handleLogin = async (event) => {
-        console.log(event);
         event.preventDefault(); // prevent the form from submitting
         try {
           console.log("Attempting login!")

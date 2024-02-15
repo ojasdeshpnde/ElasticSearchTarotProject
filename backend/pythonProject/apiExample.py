@@ -1,5 +1,6 @@
 import io
 
+from elasticsearch import Elasticsearch
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 import requests
@@ -9,6 +10,7 @@ import secrets
 import sqlite3
 import User
 import jwt
+import random
 
 app = Flask(__name__)
 CORS(app)
@@ -158,6 +160,52 @@ def login():
     else:
         return make_response(jsonify("access denied"), 404)
 
+def searchCardsByName(name, size=10):
+    es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", "2Gv2EE1_uWhw_78qcfom"))
+    hits = es.search(index="mtgcards", body={"sort": "_score", "size": size, "query": {"bool":
+                                                                         {"should": {"match": {"name": {"query": name, "fuzziness": "AUTO"}}},
+                                                                          "must": {"match": {"layout": {"query": "normal"}}},
+                                                                          }}})['hits']['hits']
+    if len(hits) == 0:
+        hits = random.choice(es.search(index="mtgcards", body={"query": {"match_all": {}}})['hits']['hits'])
+        # print(hits)
+    else:
+        weights = [0]*len(hits)
+        for i, j in enumerate(hits):
+            weights[i] = j["_score"]
+        # just weighting by the score
+        hits = random.choices(hits, weights=weights, k = 1)[0]
+    hits=hits['_source']
+    if 'image_uris' in hits:
+        return hits['image_uris']['large']
+    elif 'card_faces' in hits:
+        print(hits['card_faces'])
+        return random.choice(hits['card_faces'])['image_uris']['large']
+    else:
+        return searchCardsByName("")
+@app.route('/getcard',methods=['POST'])
+def getcard():
+    query = request.get_json()
+    b = searchCardsByName(query)
+    b = requests.get(b)
+    b.raise_for_status()
+    response = make_response(b.content)
+    image = Image.open(io.BytesIO(b.content))
+    width, height = image.size
+    left = 80 * width / 672
+    right = 592 * width / 672
+    top = 92 * height / 936
+    bottom = 500 * height / 936
+    img_byte_arr = io.BytesIO()
+    image.crop((left, top, right, bottom)).save(img_byte_arr, format='jpeg')
+    img_byte_arr = img_byte_arr.getvalue()
+    image.close()
+    response = make_response(img_byte_arr)
+    # this might be helpful
+    response.headers.set('Content-Type', 'image/jpeg')
+    # below will start a download
+    # response.headers.set('Content-Disposition', 'attachment', filename='%s.jpg' % 'test')
+    return response
 
 
 

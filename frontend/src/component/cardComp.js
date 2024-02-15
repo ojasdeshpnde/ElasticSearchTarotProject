@@ -1,17 +1,17 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import getTestImage from '../service/fetchApi'
-import { getBackendIP } from '../service/localhostSettings';
+// import { getBackendIP } from '../service/localhostSettings';
 
-function CardComp() {
+function CardComp(props) {
   useEffect( () => {
     getTestImage();
   },[])
 
   return (
     <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src={getBackendIP() + "/testimage"} />
+      <Card.Img variant="top" src={props.img}  />
       <Card.Body>
         <Card.Title>Card Title</Card.Title>
         <Card.Text>
