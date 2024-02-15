@@ -15,17 +15,20 @@ import random
 app = Flask(__name__)
 CORS(app)
 
-
+path_to_creds = "../../docker/"
+with open(path_to_creds + "cred.txt", encoding="utf8") as file:
+    password = file.read()
+es = Elasticsearch('https://localhost:9200', ca_certs=path_to_creds + "http_ca.crt", basic_auth=("elastic", "fAhOSOHq_3spLm9ht_tW"))
 
 pwd_context = CryptContext(schemes=["sha256_crypt"])
 
-x = requests.get("https://api.scryfall.com/cards/56ebc372-aabd-4174-a943-c7bf59e5028d")
-
-b = x.json()['image_uris']['large']
-b = requests.get(b)
-b.raise_for_status()
-# if b.status_code != 204:
-#     print(b.content)
+# x = requests.get("https://api.scryfall.com/cards/56ebc372-aabd-4174-a943-c7bf59e5028d")
+#
+# b = x.json()['image_uris']['large']
+# b = requests.get(b)
+# b.raise_for_status()
+# # if b.status_code != 204:
+# #     print(b.content)
 
 
 
@@ -161,7 +164,6 @@ def login():
         return make_response(jsonify("access denied"), 404)
 
 def searchCardsByName(name, size=10):
-    es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", "2Gv2EE1_uWhw_78qcfom"))
     hits = es.search(index="mtgcards", body={"sort": "_score", "size": size, "query": {"bool":
                                                                          {"should": {"match": {"name": {"query": name, "fuzziness": "AUTO"}}},
                                                                           "must": {"match": {"layout": {"query": "normal"}}},
