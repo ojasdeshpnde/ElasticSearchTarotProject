@@ -15,10 +15,11 @@ import random
 app = Flask(__name__)
 CORS(app)
 
+
 path_to_creds = "../../docker/"
 with open(path_to_creds + "cred.txt", encoding="utf8") as file:
     password = file.read()
-es = Elasticsearch('https://localhost:9200', ca_certs=path_to_creds + "http_ca.crt", basic_auth=("elastic", "fAhOSOHq_3spLm9ht_tW"))
+es = Elasticsearch('https://localhost:9200', ca_certs=path_to_creds + "http_ca.crt", basic_auth=("elastic", password))
 
 pwd_context = CryptContext(schemes=["sha256_crypt"])
 
