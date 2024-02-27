@@ -67,7 +67,7 @@ def createUser(password, fname, lname, email):
     if (tmp[0][0] != None):
         id = tmp[0][0]
 
-    tmp2 = "INSERT OR IGNORE INTO users VALUES ({},\"{}\",\"{}\",\"{}\",\"{}\",\"{}\")".format(int(id)+1,
+    tmp2 = "INSERT OR IGNORE INTO users VALUES ({},\"{}\",\"{}\",\"{}\",\"{}\",\"{}\", 0, 0, 0, 0, 0, 0, 0)".format(int(id)+1,
                                                                                                fname,
                                                                                                lname,
                                                                                                generatedSalt,
@@ -81,6 +81,79 @@ def createUser(password, fname, lname, email):
     userObj = User.User(id, fname, lname, email)
     return userObj
 
+def storeReading(imageLink, text1, text2, text3, text4, text5):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    check1 = "SELECT MAX(id) FROM cardReadings;"
+    tmp = cursor.execute(check1).fetchall()
+
+    id = 0
+    if (tmp[0][0] != None):
+        id = tmp[0][0]
+
+    tmp2 = "INSERT OR IGNORE INTO cardReadings VALUES ({},\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\")".format(int(id)+1,
+                                                                                               imageLink,
+                                                                                               text1,
+                                                                                               text2,
+                                                                                               text3,
+                                                                                               text4,
+                                                                                               text5)
+        
+    cursor.execute(tmp2)
+
+    conn.commit()
+    conn.close()
+
+    userID = CallToJWTToGetActiveUser()
+    storeCardToUser(int(id) + 1, userID) 
+
+#shifts current cards 1-7 to next position updates card1 with newestReading
+def storeCardToUser(cardID, userID):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    #get current cards
+    cards = list(cursor.execute("SELECT card1, card2, card3, card4, card5, card6, card7 FROM users WHERE id = ?", (userID,)).fetchone())
+    
+    #shift cards
+    for i in range(len(cards) - 2, -1, -1):
+        if cards[i] != 0:
+            cards[i+1] = cards[i]
+    
+    #assign newest Card
+    cards[0] = cardID
+
+    #update database
+    updateData = """
+        UPDATE users
+        SET card1 = ?, card2 = ?, card3 = ?, card4 = ?, card5 = ?, card6 = ?, card7 = ?
+        WHERE id = ?
+        """
+    cursor.execute(updateData, (*cards, userID))
+
+    conn.commit()
+    conn.close()
+
+
+#Returns (CardID, imageLink, text1-5) tuple
+def getRecentCards(NumOfCard, userID):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    
+    #get cards
+    cards = list(cursor.execute("SELECT card1, card2, card3, card4, card5, card6, card7 FROM users WHERE id = ?", (userID,)).fetchone())
+
+    #get card's unique id 
+    cardID = cards[NumOfCard - 1]
+    cardInfo = cursor.execute("SELECT * FROM cardReadings where id = ?", (cardID,)).fetchone()
+    conn.close()
+
+    #return card
+    return cardInfo
+
+def CallToJWTToGetActiveUser():
+    return 1
 
 def authenticate_user(email, password):
     conn = sqlite3.connect('database.db')
