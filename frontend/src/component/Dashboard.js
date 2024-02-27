@@ -7,6 +7,7 @@ import Container from 'react-bootstrap/Container';
 //import Col from 'react-bootstrap/Col';
 import CardComp from './cardComp';
 import SearchBar from './Search';
+import AddCardComp from './AddCard';
 
 
 
@@ -15,19 +16,34 @@ export default function Dashboard(props) {
 
   const [img, setImg] = useState();
 
-    useEffect(() => {
-    },[]);
+  const [boardSize, setBoardSize] = useState(0);
+  const [board, setBoard] = useState([]);
+  //const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const arr = [];
+    for(let i = 0; i < boardSize; i++){
+      arr.push(<CardComp img = {'http://localhost:5002/testimage'}/>);
+    }
+    setBoard(arr);
+  },[boardSize]);
 
 
   return (
-    <div style={{paddingTop:25}}>
+    <div style={{paddingTop:0}}>
         <Container>
-            <Row style={{paddingBottom:50}}>
+            <Row style={{paddingBottom:10}}>
                 <NavbarComponent setIsLoggedIn={props.setIsLoggedIn}/>
             </Row>
+            <div style={{display:"grid", gridTemplateColumns:"auto auto auto auto" , paddingTop:100}}>
+              {board}
+              <AddCardComp boardSize={boardSize} setBoardSize={setBoardSize}/>
+            </div>
         </Container>
-        <SearchBar setImg={setImg}/>
-        <CardComp img={img}/>
+        {/*<SearchBar setImg={setImg}/>*/}
+        
+        {/*<CardComp img={img}/>*/}    
+        
 
     </div>
   );
