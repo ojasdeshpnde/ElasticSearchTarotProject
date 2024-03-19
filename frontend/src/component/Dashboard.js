@@ -23,9 +23,12 @@ export default function Dashboard(props) {
   useEffect(() => {
     const arr = [];
     for(let i = 0; i < boardSize; i++){
-      arr.push(<CardComp img = {'http://localhost:5002/testimage'}/>);
+      arr.push(<CardComp key={i} img = {'http://localhost:5002/testimage'}/>);
     }
     setBoard(arr);
+    fetch('http://localhost:5002/',{
+      method: 'GET',
+      credentials: 'include'});
   },[boardSize]);
 
 

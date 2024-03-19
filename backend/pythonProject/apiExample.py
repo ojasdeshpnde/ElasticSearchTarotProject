@@ -13,7 +13,7 @@ import jwt
 import random
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 
 path_to_creds = "../../docker/"
@@ -23,12 +23,8 @@ es = Elasticsearch('https://localhost:9200', ca_certs=path_to_creds + "http_ca.c
 
 pwd_context = CryptContext(schemes=["sha256_crypt"])
 
-# x = requests.get("https://api.scryfall.com/cards/56ebc372-aabd-4174-a943-c7bf59e5028d")
-#
-# b = x.json()['image_uris']['large']
-# b = requests.get(b)
-# b.raise_for_status()
-# # if b.status_code != 204:
+
+# if b.status_code != 204:
 # #     print(b.content)
 
 
@@ -155,6 +151,17 @@ def getRecentCards(NumOfCard, userID):
 def CallToJWTToGetActiveUser():
     return 1
 
+def decodeToken(jwToken):
+    secret_key = '589b1ea45ae4551b27639cdbdc6fc47d6c4e749ca9d45df423daafc592a623e2'
+    try:
+        decoded_payload = jwt.decode(jwToken, secret_key, algorithms='HS256')
+        return decoded_payload['id']
+    except jwt.ExpiredSignatureError:
+        print('Token has expired.')
+    except jwt.InvalidTokenError:
+        print('Invalid token.')
+    return -1
+
 def authenticate_user(email, password):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -177,14 +184,8 @@ def genSession(payload):
 
     return encoded_token
 
-    # # Decode (verify) the JWT
-    # try:
-    #     decoded_payload = jwt.decode(encoded_token, secret_key, algorithms=['HS256'])
-    #     print('Decoded Payload:', decoded_payload)
-    # except jwt.ExpiredSignatureError:
-    #     print('Token has expired.')
-    # except jwt.InvalidTokenError:
-    #     print('Invalid token.')
+
+
 
 
 
@@ -194,6 +195,12 @@ def hello_world():
 
 @app.route('/testimage')
 def blah():
+    print(decodeToken(request.cookies.get('auth')))
+
+    x = requests.get("https://api.scryfall.com/cards/56ebc372-aabd-4174-a943-c7bf59e5028d")
+    b = x.json()['image_uris']['large']
+    b = requests.get(b)
+    b.raise_for_status()
     response = make_response(b.content)
     image = Image.open(io.BytesIO(b.content))
     width, height = image.size
@@ -212,6 +219,10 @@ def blah():
     # response.headers.set('Content-Disposition', 'attachment', filename='%s.jpg' % 'test')
     return response
 
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    return response
 
 @app.route('/signup', methods=['POST'])
 def sign_up():
@@ -219,8 +230,11 @@ def sign_up():
     formData = request.get_json()
     user = createUser(formData['password'], formData['fname'], formData['lname'], formData['email'])
     if user != None:
-        retObject = jsonify(genSession(user))
-        retObject.set_cookie("auth",str(retObject), httponly=True, secure=True)
+        retObject = genSession(user)
+        token = retObject
+        retObject = jsonify(retObject)
+        retObject.set_cookie("auth",str(token),httponly=True, samesite="None", secure=True)
+        add_cors_headers(retObject)
         return retObject
     else:
         return make_response(jsonify("access denied"), 404)
@@ -231,8 +245,11 @@ def login():
     formData = request.get_json()
     user = authenticate_user(formData['email'], formData['password'])
     if user != None:
-        retObject = jsonify(genSession(user))
-        retObject.set_cookie("auth",str(retObject), httponly=True, secure=True)
+        retObject = genSession(user)
+        token = retObject
+        retObject = jsonify(retObject)
+        retObject.set_cookie("auth",str(token),httponly=True, samesite="None", secure=True)
+        add_cors_headers(retObject)
         return retObject
     else:
         return make_response(jsonify("access denied"), 404)

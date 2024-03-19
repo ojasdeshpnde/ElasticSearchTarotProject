@@ -45,6 +45,7 @@ const Login = (props) => {
           console.log("Attempting login!")
           const response = await fetch(getBackendIP() + '/login', {
             method: 'POST',
+            credentials:'include',
             headers: {
               'Content-Type': 'application/json',
             },

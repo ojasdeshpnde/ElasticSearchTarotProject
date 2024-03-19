@@ -41,6 +41,7 @@ const Signup = (props) => {
 
           const response = await fetch(getBackendIP() + '/signup', {
             method: 'POST',
+            credentials:'include',
             headers: {
               'Content-Type': 'application/json',
             },
