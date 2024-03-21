@@ -276,6 +276,11 @@ def searchCardsByName(name, size=10):
         return random.choice(hits['card_faces'])['image_uris']['large']
     else:
         return searchCardsByName("")
+
+# @app.route('/getUserCards')
+# def getUserCards():
+#     
+
 @app.route('/getcard',methods=['POST'])
 def getcard():
     query = request.get_json()

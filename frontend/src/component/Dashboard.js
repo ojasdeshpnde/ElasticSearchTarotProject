@@ -8,6 +8,7 @@ import Container from 'react-bootstrap/Container';
 import CardComp from './cardComp';
 import SearchBar from './Search';
 import AddCardComp from './AddCard';
+import ModalPopup from './Modal';
 
 
 
@@ -15,7 +16,7 @@ import AddCardComp from './AddCard';
 export default function Dashboard(props) {
 
   const [img, setImg] = useState();
-
+  const [formBool, setFormBool] = useState(false);
   const [boardSize, setBoardSize] = useState(0);
   const [board, setBoard] = useState([]);
   //const [showPopup, setShowPopup] = useState(false);
@@ -38,9 +39,10 @@ export default function Dashboard(props) {
             <Row style={{paddingBottom:10}}>
                 <NavbarComponent setIsLoggedIn={props.setIsLoggedIn}/>
             </Row>
+            <ModalPopup show={formBool} setShow={setFormBool}/>
             <div style={{display:"grid", gridTemplateColumns:"auto auto auto auto" , paddingTop:100}}>
               {board}
-              <AddCardComp boardSize={boardSize} setBoardSize={setBoardSize}/>
+              <AddCardComp setFormBool={setFormBool} boardSize={boardSize} setBoardSize={setBoardSize}/>
             </div>
         </Container>
         {/*<SearchBar setImg={setImg}/>*/}

@@ -6,6 +6,7 @@ function AddCardComp(props) {
 
   const updateBoard = () => {
     props.setBoardSize(props.boardSize + 1);
+    props.setFormBool(true);
   }
   return (
     <Card onClick={updateBoard} style={{ width: '18rem', paddingTop:0}}>
