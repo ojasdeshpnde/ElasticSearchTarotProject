@@ -77,7 +77,7 @@ def createUser(password, fname, lname, email):
     userObj = User.User(id, fname, lname, email)
     return userObj
 
-def storeReading(imageLink, text1, text2, text3, text4, text5):
+def storeReading(jwToken, imageLink, text1, text2, text3, text4, text5):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
@@ -101,7 +101,7 @@ def storeReading(imageLink, text1, text2, text3, text4, text5):
     conn.commit()
     conn.close()
 
-    userID = CallToJWTToGetActiveUser()
+    userID = decodeToken(jwToken)
     storeCardToUser(int(id) + 1, userID) 
 
 #shifts current cards 1-7 to next position updates card1 with newestReading
@@ -132,24 +132,31 @@ def storeCardToUser(cardID, userID):
     conn.close()
 
 
-#Returns (CardID, imageLink, text1-5) tuple
-def getRecentCards(NumOfCard, userID):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    
-    #get cards
-    cards = list(cursor.execute("SELECT card1, card2, card3, card4, card5, card6, card7 FROM users WHERE id = ?", (userID,)).fetchone())
+#Returns JSON (CardID, imageLink, text1-5) tuple
+def getRecentCards(jwtoken):
+    userID = decodeToken(jwtoken)
+    cardsData = {}
+    for NumOfCard in range(1, 8):
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        
+        #get cards
+        cards = list(cursor.execute("SELECT card1, card2, card3, card4, card5, card6, card7 FROM users WHERE id = ?", (userID,)).fetchone())
 
-    #get card's unique id 
-    cardID = cards[NumOfCard - 1]
-    cardInfo = cursor.execute("SELECT * FROM cardReadings where id = ?", (cardID,)).fetchone()
-    conn.close()
+        #get card's unique id 
+        cardID = cards[NumOfCard - 1]
+        if(cardID != 0):
+            cardInfo = list(cursor.execute("SELECT * FROM cardReadings where id = ?", (cardID,)).fetchone())
+            obj = {"id": cardInfo[0], "image": cardInfo[1], "text1": cardInfo[2], "text2": cardInfo[3], "text3": cardInfo[4], "text4": cardInfo[5], "text5": cardInfo[6]}
+        else:
+            obj = {"id": "-1", "image": "-1", "text1": "-1", "text2": "-1", "text3": "-1", "text4": "-1", "text5": "-1"}
 
-    #return card
-    return cardInfo
+        conn.close()
 
-def CallToJWTToGetActiveUser():
-    return 1
+        cardsData[f"card{NumOfCard}"] = obj
+
+    return cardsData
+
 
 def decodeToken(jwToken):
     secret_key = '589b1ea45ae4551b27639cdbdc6fc47d6c4e749ca9d45df423daafc592a623e2'
