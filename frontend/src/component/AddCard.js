@@ -5,7 +5,6 @@ import logo from '../plus2.png';
 function AddCardComp(props) {
 
   const updateBoard = () => {
-    props.setBoardSize(props.boardSize + 1);
     props.setFormBool(true);
   }
   return (

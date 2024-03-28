@@ -73,7 +73,6 @@ def createUser(password, fname, lname, email):
 
     conn.commit()
     conn.close()
-
     userObj = User.User(id, fname, lname, email)
     return userObj
 
@@ -240,7 +239,7 @@ def sign_up():
         retObject = genSession(user)
         token = retObject
         retObject = jsonify(retObject)
-        retObject.set_cookie("auth",str(token),httponly=True, samesite="None", secure=True)
+        retObject.set_cookie("auth",str(token),httponly=True, samesite="None")
         add_cors_headers(retObject)
         return retObject
     else:
@@ -255,7 +254,7 @@ def login():
         retObject = genSession(user)
         token = retObject
         retObject = jsonify(retObject)
-        retObject.set_cookie("auth",str(token),httponly=True, samesite="None", secure=True)
+        retObject.set_cookie("auth",str(token),httponly=True, samesite="None")
         add_cors_headers(retObject)
         return retObject
     else:
@@ -288,9 +287,8 @@ def searchCardsByName(name, size=10):
 # def getUserCards():
 #     
 
-@app.route('/getcard',methods=['POST'])
-def getcard():
-    query = request.get_json()
+@app.route('/getcard/<query>',methods=['GET'])
+def getcard(query):
     b = searchCardsByName(query)
     b = requests.get(b)
     b.raise_for_status()
@@ -311,6 +309,55 @@ def getcard():
     # below will start a download
     # response.headers.set('Content-Disposition', 'attachment', filename='%s.jpg' % 'test')
     return response
+
+# @app.route('/getcard',methods=['POST'])
+# def getcard():
+#     query = request.get_json()
+#     b = searchCardsByName(query)
+#     b = requests.get(b)
+#     b.raise_for_status()
+#     response = make_response(b.content)
+#     image = Image.open(io.BytesIO(b.content))
+#     width, height = image.size
+#     left = 80 * width / 672
+#     right = 592 * width / 672
+#     top = 92 * height / 936
+#     bottom = 500 * height / 936
+#     img_byte_arr = io.BytesIO()
+#     image.crop((left, top, right, bottom)).save(img_byte_arr, format='jpeg')
+#     img_byte_arr = img_byte_arr.getvalue()
+#     image.close()
+#     response = make_response(img_byte_arr)
+#     # this might be helpful
+#     response.headers.set('Content-Type', 'image/jpeg')
+#     # below will start a download
+#     # response.headers.set('Content-Disposition', 'attachment', filename='%s.jpg' % 'test')
+#     return response
+
+@app.route('/store_reading', methods=['OPTIONS'])
+def handle_options():
+    # Set CORS headers
+    response = jsonify({'message': 'OPTIONS request handled successfully'})
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000') # Adjust this to your needs
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'PUT,POST')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')  # Allow credentials
+    return response
+@app.route('/store_reading', methods=['POST'])
+def storeR():
+    formData = request.get_json()
+    jwToken = request.cookies.get('auth')
+    print("post:{}".format(jwToken))
+    title = formData['linkText']
+    searchTxt = formData['imgText']
+    storeReading(jwToken, title, searchTxt, "","","","")
+    return getRecentCards(jwToken)
+
+@app.route('/get_reading',methods=['GET'])
+def getR():
+    jwToken = request.cookies.get('auth')
+    return getRecentCards(jwToken)
+
 
 
 
