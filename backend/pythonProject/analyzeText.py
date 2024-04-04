@@ -36,7 +36,7 @@ def searchCardsByName(name, size=10):
         return random.choice(hits['card_faces'])['image_uris']['large']
     else:
         return searchCardsByName("")
-def findHoroscope(sequence_to_classify, number = 10, positivity_threshold = 2, positivity_weight = 2, power = 2, user="User"):
+def findHoroscope(sequence_to_classify, number = 10, positivity_threshold = 2, positivity_weight = 2, power = 10, user="User"):
     c = classifier(sequence_to_classify, candidate_labels, multi_label=True)
     # c = {'sequence': 'blah', 'labels': ['a', 'b', 'c', 'd', 'e', 'f'], 'scores': [0.2,0.3,0,0.4,0.5,0.5]}
     c = pd.Series(index = c['labels'], data = c['scores']).sort_values(ascending=False) # .head(number).to_dict()
@@ -82,7 +82,8 @@ def findHoroscope(sequence_to_classify, number = 10, positivity_threshold = 2, p
         print(j["_source"]["horoscope"])
         for k in c:
             print(float(j["_source"][k]))
-            weights[i] += float(j["_source"][k])**power
+            print(float(c[k]))
+            weights[i] += (float(j["_source"][k])**power)*(float(c[k]))
     # print(weights)
     # print(hits)
     for i, a in enumerate(hits):
