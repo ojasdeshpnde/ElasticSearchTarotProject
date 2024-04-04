@@ -39,7 +39,20 @@ def searchCardsByName(name, size=10):
 def findHoroscope(sequence_to_classify, number = 10, positivity_threshold = 2, positivity_weight = 2, power = 2, user="User"):
     c = classifier(sequence_to_classify, candidate_labels, multi_label=True)
     # c = {'sequence': 'blah', 'labels': ['a', 'b', 'c', 'd', 'e', 'f'], 'scores': [0.2,0.3,0,0.4,0.5,0.5]}
-    c = pd.Series(index = c['labels'], data = c['scores']).sort_values(ascending=False).head(number).to_dict()
+    c = pd.Series(index = c['labels'], data = c['scores']).sort_values(ascending=False) # .head(number).to_dict()
+    print(c)
+    a = 1
+    var = 10000
+    print(c.size)
+    print(c.iloc[:a+2].std())
+    print(c.iloc[a+1:].std())
+    while a < c.size and c.iloc[:a+1].std() + c.iloc[a+1:].std() < var:
+        var = c.iloc[:a+1].std() + c.iloc[a+1:].std()
+        a += 1
+        print(var)
+        print(a)
+    print(c.iloc[:a+1].std() + c.iloc[a+1:].std())
+    c = c.head(a).to_dict()
 
     def get_list(label_noise):
         l = []
