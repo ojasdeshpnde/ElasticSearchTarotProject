@@ -11,6 +11,8 @@ import sqlite3
 import User
 import jwt
 import random
+from transformers import pipeline
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -22,6 +24,12 @@ with open(path_to_creds + "cred.txt", encoding="utf8") as file:
 es = Elasticsearch('https://localhost:9200', ca_certs=path_to_creds + "http_ca.crt", basic_auth=("elastic", password))
 
 pwd_context = CryptContext(schemes=["sha256_crypt"])
+
+df = pd.read_excel(path_to_creds + 'datafiles/PromptCategories.xlsx') # can also index sheet by name or fetch all sheets
+candidate_labels = df['Categories'].tolist()
+
+classifier = pipeline("zero-shot-classification",
+                      model="facebook/bart-large-mnli")
 
 
 # if b.status_code != 204:
@@ -162,6 +170,17 @@ def decodeToken(jwToken):
     try:
         decoded_payload = jwt.decode(jwToken, secret_key, algorithms='HS256')
         return decoded_payload['id']
+    except jwt.ExpiredSignatureError:
+        print('Token has expired.')
+    except jwt.InvalidTokenError:
+        print('Invalid token.')
+    return -1
+
+def getUserName(jwToken):
+    secret_key = '589b1ea45ae4551b27639cdbdc6fc47d6c4e749ca9d45df423daafc592a623e2'
+    try:
+        decoded_payload = jwt.decode(jwToken, secret_key, algorithms='HS256')
+        return decoded_payload['fname']
     except jwt.ExpiredSignatureError:
         print('Token has expired.')
     except jwt.InvalidTokenError:
@@ -348,9 +367,10 @@ def storeR():
     formData = request.get_json()
     jwToken = request.cookies.get('auth')
     print("post:{}".format(jwToken))
-    title = formData['linkText']
-    searchTxt = formData['imgText']
-    storeReading(jwToken, title, searchTxt, "","","","")
+    title = formData['linkText'] # the question about the users day
+    searchTxt = formData['imgText'] # image prompt
+    modelOutput = findHoroscope(title,getUserName(jwToken))
+    storeReading(jwToken, searchTxt, title, modelOutput,"","","")
     return getRecentCards(jwToken)
 
 @app.route('/get_reading',methods=['GET'])
@@ -358,7 +378,65 @@ def getR():
     jwToken = request.cookies.get('auth')
     return getRecentCards(jwToken)
 
+def findHoroscope(sequence_to_classify, number = 10, positivity_threshold = 2, positivity_weight = 2, power = 10, user="User"):
+    c = classifier(sequence_to_classify, candidate_labels, multi_label=True)
+    # c = {'sequence': 'blah', 'labels': ['a', 'b', 'c', 'd', 'e', 'f'], 'scores': [0.2,0.3,0,0.4,0.5,0.5]}
+    c = pd.Series(index = c['labels'], data = c['scores']).sort_values(ascending=False) # .head(number).to_dict()
+    print(c)
+    a = 1
+    var = 10000
+    print(c.size)
+    print(c.iloc[:a+2].std())
+    print(c.iloc[a+1:].std())
+    while a < c.size and c.iloc[:a+1].std() + c.iloc[a+1:].std() < var:
+        var = c.iloc[:a+1].std() + c.iloc[a+1:].std()
+        a += 1
+        print(var)
+        print(a)
+    print(c.iloc[:a+1].std() + c.iloc[a+1:].std())
+    c = c.head(a).to_dict()
 
+    def get_list(label_noise):
+        l = []
+        for key in c:
+            # l.append({"range": {key: {"gte": c[key]-label_noise,"lte": c[key]+label_noise}}})
+            l.append({"range": {key: {"gte": c[key]-label_noise}}})
+        return l
+    # s = sentiment_pipeline(sequence_to_classify)
+    # if s[0]['label'] == 'POSITIVE':
+    #     print("Positive!")
+    #     bad = 'negative'
+    # else:
+    #     print("Negative!")
+    #     bad = 'positive'
+    bad = 'positive'
+    # hits = es.search(index="horoscopepredictedgeneral", body={"query": {"range": {bad: {"lte": 1000}},
+    #                                                                                         }})['hits']['hits']
+    # hits = es.search(index="horoscopepredictedgeneral", body={"query": {"bool": {"must": l}}})['hits']['hits']
+    hits = []
+    label_noise = 0.05
+    while len(hits) < 10:
+        hits = es.search(index="horoscopepredictedgeneral", body={"query": {"bool": {"must": get_list(label_noise)}}}, size= 100)['hits']['hits']
+        label_noise += 0.05
+    weights = [0] * len(hits)
+    print(c)
+    for i, j in enumerate(hits):
+        print(j["_source"]["horoscope"])
+        for k in c:
+            print(float(j["_source"][k]))
+            print(float(c[k]))
+            weights[i] += (float(j["_source"][k])**power)*(float(c[k]))
+    # print(weights)
+    # print(hits)
+    for i, a in enumerate(hits):
+        print(weights[i])
+        print(a["_source"]["horoscope"])
+    # just weighting by the score
+    hits = random.choices(hits, weights=weights, k=1)[0]
+    # print(hits)
+    # print(c)
+    # print(s)
+    return hits["_source"]["horoscope"].replace(hits["_source"]["sign"].lower().title(), user)
 
 
 if __name__ == '__main__':

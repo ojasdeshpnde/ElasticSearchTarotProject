@@ -33,14 +33,17 @@ export default function Dashboard(props) {
       if(response.ok){
         response.json().then(data => {
           setBoard(
-            [<CardComp key={data['card1'].id} text={data['card1'].text1} text2={"[EMPTY FOR NOW]"} img = {'http://localhost:5002/getcard/'+data['card1'].image}/>,
-            <CardComp key={data['card2'].id} text={data['card2'].text1} text2={"[EMPTY FOR NOW]"}  img = {'http://localhost:5002/getcard/'+data['card2'].image}/>,
-            <CardComp key={data['card3'].id} text={data['card3'].text1} text2={"[EMPTY FOR NOW]"}  img = {'http://localhost:5002/getcard/'+data['card3'].image}/>,
-            <CardComp key={data['card4'].id} text={data['card4'].text1} text2={"[EMPTY FOR NOW]"}   img = {'http://localhost:5002/getcard/'+data['card4'].image}/>,
-            <CardComp key={data['card5'].id} text={data['card5'].text1} text2={"[EMPTY FOR NOW]"}  img = {'http://localhost:5002/getcard/'+data['card5'].image}/>,
-            <CardComp key={data['card6'].id} text={data['card6'].text1}  text2={"[EMPTY FOR NOW]"} img = {'http://localhost:5002/getcard/'+data['card6'].image}/>,
-            <CardComp key={data['card7'].id} text={data['card7'].text1}  text2={"[EMPTY FOR NOW]"} img = {'http://localhost:5002/getcard/'+data['card7'].image}/>
+            [<CardComp key={data['card1'].id} text={data['card1'].text1} text2={data['card1'].text2} img = {'http://localhost:5002/getcard/'+data['card1'].image}/>,
+            <CardComp key={data['card2'].id} text={data['card2'].text1} text2={data['card2'].text2}  img = {'http://localhost:5002/getcard/'+data['card2'].image}/>,
+            <CardComp key={data['card3'].id} text={data['card3'].text1} text2={data['card3'].text2}  img = {'http://localhost:5002/getcard/'+data['card3'].image}/>,
+            <CardComp key={data['card4'].id} text={data['card4'].text1} text2={data['card4'].text2}   img = {'http://localhost:5002/getcard/'+data['card4'].image}/>,
+            <CardComp key={data['card5'].id} text={data['card5'].text1} text2={data['card5'].text2}  img = {'http://localhost:5002/getcard/'+data['card5'].image}/>,
+            <CardComp key={data['card6'].id} text={data['card6'].text1}  text2={data['card6'].text2} img = {'http://localhost:5002/getcard/'+data['card6'].image}/>,
+            <CardComp key={data['card7'].id} text={data['card7'].text1}  text2={data['card7'].text2} img = {'http://localhost:5002/getcard/'+data['card7'].image}/>
             ]);
+          for(let i = 0; i < board.length; i++){
+            console.log(board[i]);
+          }
         });
       }
     }
