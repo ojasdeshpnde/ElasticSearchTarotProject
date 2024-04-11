@@ -4,11 +4,26 @@ function InputForm(props) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     props.setFormObj((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: sanitize(value),
     }));
   };
+
+  function sanitize(string) {
+    const map = {
+        '&': ' ',
+        '<': ' ',
+        '>': ' ',
+        '"': ' ',
+        "/": ' ',
+        "?": ' '
+    };
+    const reg = /[&<>"'/]/ig;
+
+    return string.replace(reg, (match)=>(map[match]));
+  }
 
   return (
     <Form>

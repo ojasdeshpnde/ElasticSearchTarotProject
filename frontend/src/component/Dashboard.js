@@ -10,6 +10,7 @@ import SearchBar from './Search';
 import AddCardComp from './AddCard';
 import ModalPopup from './Modal';
 import { getBackendIP } from '../service/localhostSettings';
+import OverlaySVG from './OverlaySVG';
 
 
 
@@ -33,7 +34,8 @@ export default function Dashboard(props) {
       if(response.ok){
         response.json().then(data => {
           setBoard(
-            [<CardComp key={data['card1'].id} text={data['card1'].text1} text2={data['card1'].text2} img = {'http://localhost:5002/getcard/'+data['card1'].image}/>,
+            [
+            <CardComp key={data['card1'].id} text={data['card1'].text1} text2={data['card1'].text2} img = {'http://localhost:5002/getcard/'+data['card1'].image}/>,
             <CardComp key={data['card2'].id} text={data['card2'].text1} text2={data['card2'].text2}  img = {'http://localhost:5002/getcard/'+data['card2'].image}/>,
             <CardComp key={data['card3'].id} text={data['card3'].text1} text2={data['card3'].text2}  img = {'http://localhost:5002/getcard/'+data['card3'].image}/>,
             <CardComp key={data['card4'].id} text={data['card4'].text1} text2={data['card4'].text2}   img = {'http://localhost:5002/getcard/'+data['card4'].image}/>,
