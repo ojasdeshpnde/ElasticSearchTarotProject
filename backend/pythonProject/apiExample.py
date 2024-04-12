@@ -258,7 +258,7 @@ def sign_up():
         retObject = genSession(user)
         token = retObject
         retObject = jsonify(retObject)
-        retObject.set_cookie("auth",str(token),httponly=True, samesite="None")
+        retObject.set_cookie("auth",str(token),httponly=True, samesite="Lax")
         add_cors_headers(retObject)
         return retObject
     else:
@@ -273,7 +273,7 @@ def login():
         retObject = genSession(user)
         token = retObject
         retObject = jsonify(retObject)
-        retObject.set_cookie("auth",str(token),httponly=True, samesite="None")
+        retObject.set_cookie("auth",str(token),httponly=True, samesite="Lax")
         add_cors_headers(retObject)
         return retObject
     else:
@@ -285,6 +285,8 @@ def searchCardsByName(name, size=10):
                                                                           "must": {"match": {"layout": {"query": "normal"}}},
                                                                           }}})['hits']['hits']
     if len(hits) == 0:
+        #hits = random.choice(es.search(index="mtgcards", body={
+            #"query": {"function_score": {"query": {"match_all": {}}, "random_score": {}}}})['hits']['hits'])
         hits = random.choice(es.search(index="mtgcards", body={"query": {"match_all": {}}})['hits']['hits'])
         # print(hits)
     else:
@@ -369,7 +371,7 @@ def storeR():
     print("post:{}".format(jwToken))
     title = formData['linkText'] # the question about the users day
     searchTxt = formData['imgText'] # image prompt
-    modelOutput = findHoroscope(title,getUserName(jwToken))
+    modelOutput = findHoroscope(title,user=getUserName(jwToken))
     storeReading(jwToken, searchTxt, title, modelOutput,"","","")
     return getRecentCards(jwToken)
 

@@ -16,7 +16,7 @@ import OverlaySVG from './OverlaySVG';
 
 export default function Dashboard(props) {
 
-  const [img, setImg] = useState();
+  const [getInit, setInit] = useState(false);
   const [formBool, setFormBool] = useState(false);
   const [boardSize, setBoardSize] = useState(0);
   const [board, setBoard] = useState([]);
@@ -26,32 +26,36 @@ export default function Dashboard(props) {
     for(let i = 0; i < board.length; i++){
       console.log(board[i]);
     }
-     const getRe = async () => {
-      const response = await fetch(getBackendIP() + '/get_reading', {
-        method: 'GET',
-        credentials:'include',
-      });
-      if(response.ok){
-        response.json().then(data => {
-          setBoard(
-            [
-            <CardComp key={data['card1'].id} text={data['card1'].text1} text2={data['card1'].text2} img = {'http://localhost:5002/getcard/'+data['card1'].image}/>,
-            <CardComp key={data['card2'].id} text={data['card2'].text1} text2={data['card2'].text2}  img = {'http://localhost:5002/getcard/'+data['card2'].image}/>,
-            <CardComp key={data['card3'].id} text={data['card3'].text1} text2={data['card3'].text2}  img = {'http://localhost:5002/getcard/'+data['card3'].image}/>,
-            <CardComp key={data['card4'].id} text={data['card4'].text1} text2={data['card4'].text2}   img = {'http://localhost:5002/getcard/'+data['card4'].image}/>,
-            <CardComp key={data['card5'].id} text={data['card5'].text1} text2={data['card5'].text2}  img = {'http://localhost:5002/getcard/'+data['card5'].image}/>,
-            <CardComp key={data['card6'].id} text={data['card6'].text1}  text2={data['card6'].text2} img = {'http://localhost:5002/getcard/'+data['card6'].image}/>,
-            <CardComp key={data['card7'].id} text={data['card7'].text1}  text2={data['card7'].text2} img = {'http://localhost:5002/getcard/'+data['card7'].image}/>
-            ]);
-          for(let i = 0; i < board.length; i++){
-            console.log(board[i]);
-          }
+    if(!getInit){
+      const getRe = async () => {
+        const response = await fetch(getBackendIP() + '/get_reading', {
+          method: 'GET',
+          credentials:'include',
         });
+        if(response.ok){
+          console.log("running useEffect")
+          response.json().then(data => {
+            let tmpS = ['card1','card2','card3','card4','card5','card6','card7'];
+            let tmpB = [];
+            for(let i = 0 ; i < 7; i++){
+              console.log(data[tmpS[i]].id >= 0);
+              if(data[tmpS[i]].id >= 0){
+                tmpB.push(<CardComp key={data[tmpS[i]].id} text={data[tmpS[i]].text1} text2={data[tmpS[i]].text2} img = {'http://localhost:5002/getcard/'+data[tmpS[i]].image}/>);
+              }
+            }
+            setBoard(tmpB);
+            for(let i = 0; i < board.length; i++){
+              console.log(board[i]);
+            }
+            setInit(true);
+          });
+        }
       }
+      const resp = getRe().catch(console.error);
     }
-    const resp = getRe().catch(console.error);
+    console.log(board);
     
-  },[]);
+  },[board]);
 
 
   return (
@@ -60,7 +64,7 @@ export default function Dashboard(props) {
             <Row style={{paddingBottom:10}}>
                 <NavbarComponent setIsLoggedIn={props.setIsLoggedIn}/>
             </Row>
-            <ModalPopup setBoard={setBoard} show={formBool} setShow={setFormBool}/>
+            <ModalPopup board={board} setBoard={setBoard} show={formBool} setShow={setFormBool}/>
             <div style={{display:"grid", gridTemplateColumns:"auto auto auto auto" , paddingTop:100}}>
               {board}
               <AddCardComp setFormBool={setFormBool} boardSize={boardSize} setBoardSize={setBoardSize}/>
