@@ -4,13 +4,15 @@ import Modal from 'react-bootstrap/Modal';
 import InputForm from './InputForm';
 import { getBackendIP } from '../service/localhostSettings';
 import CardComp from './cardComp';
+import LoadingIcons from 'react-loading-icons'
 
 function ModalPopup(props) {
 
   const handleClose = () => props.setShow(false);
   const handleShow = () => props.setShow(true);
+  
 
-
+  const [load, setLoad] = useState(false);
   const [formObj, setFormObj] = useState({
     linkText:"",
     imgText:""
@@ -20,6 +22,7 @@ function ModalPopup(props) {
   const handleSubmit = async () => {
     try {
         console.log("Submitting!!")
+        setLoad(true);
         const response = await fetch(getBackendIP() + '/store_reading', {
           method: 'POST',
           credentials:'include',
@@ -53,7 +56,9 @@ function ModalPopup(props) {
         // Handle network errors
         console.error('Network error:', error.message);
       }
+    setLoad(false);
     props.setShow(false);
+
   }
 
 
@@ -66,6 +71,7 @@ function ModalPopup(props) {
         </Modal.Header>
         <Modal.Body>
             <InputForm setFormObj={setFormObj}/>
+            {load ? <LoadingIcons.Puff stroke="black" /> : null }
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
