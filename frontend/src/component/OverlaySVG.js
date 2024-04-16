@@ -6,8 +6,8 @@ import { ReactComponent as TextFields } from "../TextFields.svg";
 function OverlaySVG(props) {
   return (
     <svg
-      width="120%"
-      height="120%"
+      width="100%"
+      height="100%"
       viewBox="0 0 360 360"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -15,10 +15,11 @@ function OverlaySVG(props) {
       <Cardback x="5" y="5" width="350" height="350" />
       {/* Imported Image */}
       <image
-        x="75"
-        y="50"
-        width="210"
-        height="105"
+        x="77"
+        y="27"
+        width="205"
+        height="125"
+        preserveAspectRatio="none"
         xlinkHref={props.img}
       />
       {/* Custom SVG Component 2: ImageMask */}
@@ -26,13 +27,13 @@ function OverlaySVG(props) {
       {/* Custom SVG Component 3: TextFields */}
       <TextFields x="5" y="5" width="350" height="350" />
       {/* Title Overlay */}
-      <text x="123" y="187" fill="#331817" fontSize="30">
+      <text x="70" y="187" fill="#331817" fontSize="30">
         {props.text}
       </text>
       {/* Tags Overlay */}
-      <text x="75" y="40" fill="black" fontSize="15">
+      {/* <text x="75" y="40" fill="black" fontSize="15">
         user_name | Reading #7 | Rare
-      </text>
+      </text> */}
       {/* Reading Overlay: Line 1 */}
       <CardReading txt={props.text2}/>
     </svg>
@@ -57,7 +58,7 @@ function WrapText({ cardReading }) {
     if (counter < maxChars) {
       let temp = [""];
       for (let j = i; j < cardReading.length; j++) {
-        if (cardReading[j] != " ") {
+        if (cardReading[j] !== " ") {
           temp.push(cardReading[j]);
         } else {
           break;
