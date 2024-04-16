@@ -1,5 +1,5 @@
 import io
-
+import re
 from elasticsearch import Elasticsearch
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
@@ -17,7 +17,7 @@ import pandas as pd
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-
+bad_words = pd.read_excel("../prepositions.xlsx")["preposition"].tolist()
 path_to_creds = "../../docker/"
 with open(path_to_creds + "cred.txt", encoding="utf8") as file:
     password = file.read()
@@ -310,7 +310,8 @@ def searchCardsByName(name, size=10):
 
 @app.route('/getcard/<query>',methods=['GET'])
 def getcard(query):
-    b = searchCardsByName(query)
+    a = [x for x in re.compile('\w+').findall(query) if x not in bad_words]
+    b = random.choice([searchCardsByName(k) for k in a])
     b = requests.get(b)
     b.raise_for_status()
     response = make_response(b.content)
