@@ -40,7 +40,7 @@ export default function Dashboard(props) {
             for(let i = 0 ; i < 7; i++){
               console.log(data[tmpS[i]].id >= 0);
               if(data[tmpS[i]].id >= 0){
-                tmpB.push(<CardComp key={data[tmpS[i]].id} text={data[tmpS[i]].text1} text2={data[tmpS[i]].text2} img = {'http://localhost:5002/getcard/'+data[tmpS[i]].image}/>);
+                tmpB.push(<OverlaySVG key={data[tmpS[i]].id} text={data[tmpS[i]].text1} text2={data[tmpS[i]].text2} img = {'http://localhost:5002/getcard/'+data[tmpS[i]].image}/>);
               }
             }
             setBoard(tmpB);
@@ -59,7 +59,7 @@ export default function Dashboard(props) {
 
 
   return (
-    <div style={{paddingTop:0}}>
+    <div style={{paddingTop:0, backgroundColor:"#c1a785"}}>
         <Container>
             <Row style={{paddingBottom:10}}>
                 <NavbarComponent setIsLoggedIn={props.setIsLoggedIn}/>
