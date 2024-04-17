@@ -9,7 +9,9 @@ function AddCardComp(props) {
     props.setFormBool(true);
   }
   return (
-    <OverlaySVG onClick={updateBoard} img={logo} text={"Add a reading!"} text2={"Click here if you would like a new reading."}/>
+    <div onClick={updateBoard}>
+      <OverlaySVG addFlag={true} img={logo} text={"Add a reading!"} text2={"Click here if you would like a new reading."}/>
+    </div>
     // <Card onClick={updateBoard} style={{ width: '18rem', paddingTop:0}}>
     //   <Card.Img variant="top" src={logo} />
     //   <Card.Body>

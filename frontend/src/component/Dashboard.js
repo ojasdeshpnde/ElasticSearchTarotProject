@@ -20,6 +20,7 @@ export default function Dashboard(props) {
   const [formBool, setFormBool] = useState(false);
   const [boardSize, setBoardSize] = useState(0);
   const [board, setBoard] = useState([]);
+
   //const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -38,9 +39,9 @@ export default function Dashboard(props) {
             let tmpS = ['card1','card2','card3','card4','card5','card6','card7'];
             let tmpB = [];
             for(let i = 0 ; i < 7; i++){
-              console.log(data[tmpS[i]].id >= 0);
+              console.log(data[tmpS[i]]);
               if(data[tmpS[i]].id >= 0){
-                tmpB.push(<OverlaySVG key={data[tmpS[i]].id} text={data[tmpS[i]].text1} text2={data[tmpS[i]].text2} img = {'http://localhost:5002/getcard/'+data[tmpS[i]].image}/>);
+                tmpB.push(<OverlaySVG addFlag={false} key={data[tmpS[i]].id} text={data[tmpS[i]].text1} text2={data[tmpS[i]].text2} img = {'http://localhost:5002/getcard/'+data[tmpS[i]].text2}/>);
               }
             }
             setBoard(tmpB);

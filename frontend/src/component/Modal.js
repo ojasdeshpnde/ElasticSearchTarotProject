@@ -4,7 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import InputForm from './InputForm';
 import { getBackendIP } from '../service/localhostSettings';
 import CardComp from './cardComp';
-import LoadingIcons from 'react-loading-icons'
+import OverlaySVG from './OverlaySVG';
+import Spinner from 'react-bootstrap/Spinner';
 
 function ModalPopup(props) {
 
@@ -42,7 +43,7 @@ function ModalPopup(props) {
             for(let i = 0 ; i < 7; i++){
               console.log(data[tmpS[i]].id)
               if(data[tmpS[i]].id >= 0){
-                tmpB.push(<CardComp key={data[tmpS[i]].id} text={data[tmpS[i]].text1} text2={data[tmpS[i]].text2} img = {'http://localhost:5002/getcard/'+data[tmpS[i]].image}/>);
+                tmpB.push(<OverlaySVG addFlag={false} key={data[tmpS[i]].id} text={data[tmpS[i]].text1} text2={data[tmpS[i]].text2} img = {'http://localhost:5002/getcard/'+data[tmpS[i]].text2}/>);
               }
             }
             props.setBoard(tmpB);
@@ -71,15 +72,28 @@ function ModalPopup(props) {
         </Modal.Header>
         <Modal.Body>
             <InputForm setFormObj={setFormObj}/>
-            {load ? <LoadingIcons.Puff stroke="black" /> : null }
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
+          {!load ? 
           <Button variant="primary" onClick={handleSubmit}>
             Add!
+          </Button> :
+          <Button variant="primary" disabled>
+            <Spinner
+              as="span"
+              animation="grow"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+            />
+            Loading...
           </Button>
+
+          }
+
         </Modal.Footer>
       </Modal>
     </>

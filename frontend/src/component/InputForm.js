@@ -28,13 +28,8 @@ function InputForm(props) {
   return (
     <Form>
       <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-        <Form.Label>Title</Form.Label>
+        <Form.Label>Tell us about your day</Form.Label>
         <Form.Control as="textarea" name="linkText" rows={2} onChange={e => handleChange(e)} />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-        <Form.Label>Image Search</Form.Label>
-        <Form.Control name="imgText" as="textarea" rows={2} onChange={e => handleChange(e)}/>
       </Form.Group>
     </Form>
   );
