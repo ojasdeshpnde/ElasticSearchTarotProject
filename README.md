@@ -30,6 +30,8 @@ Make sure you have a Docker container that is empty with Elastic Search running.
 Note, that you elastc search password, should be put into the **cred.txt** file that is located in the docker folder as well. This is important for elastic search to work as intended.
 Once you have the database setup properly, and the elastic search instance running with our data uploaded successfully, you can follow the instructions below:
 
+At some point you will get an error if you do not have PyTorch installed. You HAVE TO HAVE PyTorch installed, which is about a 1.6 GB model that we have used for this project. You will need to install it to run this project in any capacity, so make sure you have that installed. The error might indicate that you can use TensorFlow as well, but that is just wrong, and you must have PyTorch.
+
 Now, you should be ready to run your servers. Notice that the backend and frontend are not directly related, so you do have to run both instances seperately. I would suggest you do the following:
 
   1. Run the python file called **apiExample.py**
