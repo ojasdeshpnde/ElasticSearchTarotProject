@@ -4,7 +4,7 @@ This is the readme for our Tarot Card Project. This project is written in Python
 
 ## Requirements
 
-Make sure you have python and npm installed. If you do not have this stuff downloaded and installed, I would just google how to install python as well as npm. If you are downloading python and would like an IDE suggestion, I would recommend using Pycharm. 
+Make sure you have python and npm installed. If you do not have this stuff downloaded and installed, I would just google how to install python as well as npm. If you are downloading python and would like an IDE suggestion, I would recommend using Pycharm. Clone this project wherever you want.
 
 ## Installing all dependencies
 
