@@ -25,6 +25,11 @@ command or use your IDE to handle your packages.
 If you have a copy of the database, you can skip to further below in the instructions. If not, follow these steps:
 Run the python script called **database.py**. This should generate a sqlite database. This is currently being used to deal with login stuff. 
 
+Make sure you have a Docker container that is empty with Elastic Search running. (You could also just have elastis search in some other way, just make sure you have an instance of elastic search running). Once, you have elastic search running, you have to upload all of our documents to your elastic search instance, which you can do by running the file called **load_data.py** found in the docker folder.
+
+Note, that you elastc search password, should be put into the **cred.txt** file that is located in the docker folder as well. This is important for elastic search to work as intended.
+Once you have the database setup properly, and the elastic search instance running with our data uploaded successfully, you can follow the instructions below:
+
 Now, you should be ready to run your servers. Notice that the backend and frontend are not directly related, so you do have to run both instances seperately. I would suggest you do the following:
 
   1. Run the python file called **apiExample.py**
